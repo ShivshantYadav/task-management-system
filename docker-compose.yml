@@ -1,0 +1,58 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: taskmanagement-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "YourStrong!Passw0rd"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"YourStrong!Passw0rd\" -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: TaskManagement.API/Dockerfile
+    container_name: taskmanagement-api
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=TaskManagementDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;"
+      Jwt__Key: "THIS_IS_A_DEV_ONLY_SUPER_SECRET_KEY_CHANGE_ME_32CHARS+"
+      Jwt__Issuer: "TaskManagementApi"
+      Jwt__Audience: "TaskManagementClient"
+      Jwt__ExpiryMinutes: "120"
+      Frontend__Origin: "http://localhost:3000"
+      Smtp__Enabled: "${SMTP_ENABLED:-false}"
+      Smtp__Host: "${SMTP_HOST:-smtp.gmail.com}"
+      Smtp__Port: "${SMTP_PORT:-587}"
+      Smtp__EnableSsl: "${SMTP_ENABLE_SSL:-true}"
+      Smtp__Username: "${SMTP_USERNAME:-}"
+      Smtp__Password: "${SMTP_PASSWORD:-}"
+      Smtp__FromEmail: "${SMTP_FROM_EMAIL:-noreply@taskflow.local}"
+      Smtp__FromName: "${SMTP_FROM_NAME:-TaskFlow}"
+    ports:
+      - "5000:8080"
+
+  frontend:
+    build:
+      context: ./TaskManagement.Frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: "http://localhost:5000/api"
+    container_name: taskmanagement-frontend
+    depends_on:
+      - api
+    ports:
+      - "3000:80"
+
+volumes:
+  sqlserver-data:

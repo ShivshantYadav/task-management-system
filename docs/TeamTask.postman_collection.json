@@ -1,0 +1,70 @@
+{
+  "info": {
+    "name": "Team Task Management API",
+    "description": "Assessment API flow: login -> teams -> tasks -> status -> comments -> notifications.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key": "baseUrl", "value": "http://localhost:5000/api"},
+    {"key": "token", "value": ""},
+    {"key": "teamId", "value": "1"},
+    {"key": "taskId", "value": "1"}
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login - Demo Admin",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\n  \"email\": \"admin@demo.com\",\n  \"password\": \"Admin@123\"\n}"},
+            "url": {"raw":"{{baseUrl}}/auth/login","host":["{{baseUrl}}"],"path":["auth","login"]}
+          }
+        },
+        {
+          "name": "Login - Demo Manager",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\n  \"email\": \"manager@demo.com\",\n  \"password\": \"Manager@123\"\n}"},
+            "url": {"raw":"{{baseUrl}}/auth/login","host":["{{baseUrl}}"],"path":["auth","login"]}
+          }
+        },
+        {
+          "name": "Login - Demo User",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\n  \"email\": \"user@demo.com\",\n  \"password\": \"User@123\"\n}"},
+            "url": {"raw":"{{baseUrl}}/auth/login","host":["{{baseUrl}}"],"path":["auth","login"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Teams",
+      "item": [
+        {"name":"List Teams","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{token}}"}],"url":{"raw":"{{baseUrl}}/teams","host":["{{baseUrl}}"],"path":["teams"]}}},
+        {"name":"Get Team","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{token}}"}],"url":{"raw":"{{baseUrl}}/teams/{{teamId}}","host":["{{baseUrl}}"],"path":["teams","{{teamId}}"]}}}
+      ]
+    },
+    {
+      "name": "Tasks",
+      "item": [
+        {"name":"List Tasks","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{token}}"}],"url":{"raw":"{{baseUrl}}/tasks?status=ToDo&priority=High","host":["{{baseUrl}}"],"path":["tasks"],"query":[{"key":"status","value":"ToDo"},{"key":"priority","value":"High"}]}}},
+        {"name":"Get Task","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{token}}"}],"url":{"raw":"{{baseUrl}}/tasks/{{taskId}}","host":["{{baseUrl}}"],"path":["tasks","{{taskId}}"]}}},
+        {"name":"Update Status","request":{"method":"PATCH","header":[{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"status\": \"InProgress\"\n}"},"url":{"raw":"{{baseUrl}}/tasks/{{taskId}}/status","host":["{{baseUrl}}"],"path":["tasks","{{taskId}}","status"]}}}
+      ]
+    },
+    {
+      "name": "Collaboration",
+      "item": [
+        {"name":"Task Comments","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{token}}"}],"url":{"raw":"{{baseUrl}}/tasks/{{taskId}}/comments","host":["{{baseUrl}}"],"path":["tasks","{{taskId}}","comments"]}}},
+        {"name":"Notifications","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{token}}"}],"url":{"raw":"{{baseUrl}}/notifications","host":["{{baseUrl}}"],"path":["notifications"]}}},
+        {"name":"Dashboard","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{token}}"}],"url":{"raw":"{{baseUrl}}/dashboard/summary","host":["{{baseUrl}}"],"path":["dashboard","summary"]}}}
+      ]
+    }
+  ]
+}

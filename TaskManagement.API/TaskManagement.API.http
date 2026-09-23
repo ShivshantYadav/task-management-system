@@ -1,0 +1,25 @@
+@TaskManagement.API_HostAddress = http://localhost:5195
+
+### Register
+POST {{TaskManagement.API_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Admin User",
+  "email": "admin@demo.com",
+  "password": "Password123!",
+  "role": "Admin"
+}
+
+### Login
+POST {{TaskManagement.API_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@demo.com",
+  "password": "Password123!"
+}
+
+### Get tasks (replace TOKEN)
+GET {{TaskManagement.API_HostAddress}}/api/tasks
+Authorization: Bearer TOKEN

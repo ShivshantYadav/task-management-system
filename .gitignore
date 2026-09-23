@@ -1,0 +1,13 @@
+## .NET
+bin/
+obj/
+.vs/
+*.user
+
+## Frontend
+TaskManagement.Frontend/node_modules/
+TaskManagement.Frontend/dist/
+TaskManagement.Frontend/.env
+
+## Misc
+*.db
